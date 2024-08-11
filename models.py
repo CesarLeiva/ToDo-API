@@ -1,5 +1,3 @@
-import bcrypt
-
 class User:
     def __init__(self, account, password, name=None) -> None:
         self._account = account
@@ -27,7 +25,7 @@ class User:
         self._id = id
 
 class Task:
-    def __init__(self, user_id, description, priority=None, date=None, time=None, completed = False, published = False):
+    def __init__(self, user_id, description, priority=None, date=None, time=None, completed = False, published = False, id=None):
         self._user_id = user_id
         self._description = description
         self.priority = priority
@@ -37,7 +35,7 @@ class Task:
         # priority_list = ['high', 'medium', 'low', 'very low']
         self.completed = completed
         self.published = published
-        self._id = None
+        self._id = id
 
     @property
     def user_id(self) -> str:
@@ -50,11 +48,22 @@ class Task:
     def id(self) -> str:
             return self._id
     
-    def setid(self, id):
+    def setid(self, id) -> set:
         self._id = id
     
-    def setdescription(self, description):
+    def setdescription(self, description) -> set:
         self._description = description
+    
+    def serialize(self) -> dict:
+        return {
+            "id": self._id,
+            "description": self._description,
+            "priority": self.priority,
+            "date": self.date,
+            "time": self.time,
+            "completed": self.completed,
+            "published": self.published
+        }
     
     
 

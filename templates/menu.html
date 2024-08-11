@@ -11,7 +11,21 @@
 
         <h1>Menu</h1>
 
-        <form action="\logout">
+        <form action="/api/showtasks" method="get">
+            <input type="submit" value="Show tasks">
+        </form>
+        <br>
+        <form action="/addtask">
+            <input type="submit" value="Add new task">
+        </form>
+        <br>
+        <form action="/api/completetask" method="post">
+            <label for="task_id">Introduce task id to mark as completed</label><br>
+            <input type="number" name="task_id" id="task_id">
+            <input type="submit" value="Complete task">
+        </form>
+        <br>
+        <form action="/logout">
             <input type="submit" value="Log out">
         </form>
 

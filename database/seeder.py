@@ -51,6 +51,14 @@ def create_db():
     conn.commit()
     conn.close()
 
+def get_id(account): #! Obtener el id de la cuenta loggeada
+    conn = sql.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT id FROM users WHERE account = ?", (account,))
+    id = cursor.fetchone()[0]
+    conn.close()
+    return id
+
 def create_user(user) -> bool: #! Función registro de usuario
     hashed_password = bcrypt.hashpw(user.password.encode('utf-8'), bcrypt.gensalt())
     conn = sql.connect(db_path)
@@ -59,7 +67,6 @@ def create_user(user) -> bool: #! Función registro de usuario
 
     if cursor.fetchone(): # Si el usuario existe
         conn.close()
-        print("usuario existente")
         return False
     
     else: # Si el usuario no existe
@@ -70,7 +77,6 @@ def create_user(user) -> bool: #! Función registro de usuario
         )
         conn.commit()
         conn.close()
-        print("usuario creado con éxito")
         return True
 
 def log_in(user): #! Función inicio de sesión 
@@ -81,26 +87,35 @@ def log_in(user): #! Función inicio de sesión
     if result:
         stored_password = result[0]
         if bcrypt.checkpw(user.password.encode('utf-8'), stored_password):
+            conn.close()
             return True
+    else:
+        conn.close()
+        return False
+
+def show_tasks(user_id): #! Mostrar tareas creadas por el usuario
+    conn = sql.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT * FROM tasks WHERE user_id = ?", str(user_id))
+    tasks = cursor.fetchall()
+    if tasks:
+        return tasks
     else:
         return False
 
-def log_out():
-    pass
+def create_task(task): #! Crear una tarea
+    # ToDo: Evitar que se guarde "" en vez de null
+    conn = sql.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute(
+        """INSERT INTO tasks (user_id, description, completed, published, priority, date, time)
+        VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        (task.user_id, task.description, task.completed, task.published, task.priority, task.date, task.time)
+    )
+    conn.commit()
+    conn.close()
 
-def create_task():
-    pass
-
-def create_super_task():
-    pass
-
-def create_sub_task():
-    pass
-
-def complete_task():
-    pass
-
-def complete_sub_task():
+def complete_task(): #ToDo: Marcar tarea como completada
     pass
 
 if __name__ == '__main__':
