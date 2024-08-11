@@ -6,55 +6,77 @@ from logging import exception
 app = Flask(__name__)
 app.secret_key = "cesar"
 
-user = User("cesaracount", "contraseña", "César")
+# user = User("cesaracount", "contraseña", "César") #? Cuenta creada
+# user = User("cuenta", "contraseña", "Nombre") #? Cuenta creada
 
-# Rutas
-@app.route('/') # Index
+#*----------------------------------------------------------------------------------------------*#
+#? Rutas para mostrar renders
+
+@app.route('/') #! Muestra el index para loggearse
 def index():
-    session['account'] = user.account #? Guarda una variable en la sesión
-    if 'account' in session:
-        account = session['user']
-        print(account)
-    return render_template("index.html")
+    return render_template("login.html")
 
-@app.route('/api/login', methods=["POST"]) # Index
+@app.route('/register') #! Muestra el html para registrarse
+def register():
+    return render_template("register.html")
+
+@app.route('/menu') #! Muestra las tareas del usuario
+def menu():
+    try:
+        if 'account' in session:
+            return render_template("menu.html")
+        else:
+            return jsonify({'msg': "there is'n active session"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
+
+#*----------------------------------------------------------------------------------------------*#
+#? Rutas para gestionar al usuario - sign up, log in y log out
+
+@app.route('/api/signup', methods=['POST']) #! Registrar usuario
+def signup():
+    try:
+        user = User(request.form['account'], request.form['password'], request.form['name'])
+        if create_user(user):
+            return jsonify({"msg": "successfully registered"})
+        else:
+            return jsonify({"msg": "existing user"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
+
+@app.route('/api/login', methods=["POST"]) #! Iniciar sesión
 def login():
     try:
-        user = User(request.form["account"], request.form["password"], request.form["name"])
+        user = User(request.form["account"], request.form["password"])
         if log_in(user):
             session['account'] = user.account #? Guarda una variable en la sesión
-            return jsonify({"msg": f"session started - {user.account}"}), 200
+            return redirect(url_for('menu'))
         else:
             return jsonify({"msg": "wrong username or password"}), 200
-        # if 'account' in session:
-        #     account = session['user']
-        #     print(account)
     except Exception:
         exception("\n[SERVER]: error in rourte /api/login. Log: \n") # devueve error si algo sale mal (por consola)
         return jsonify({"msg": "An error has occurred"}), 500
 
-@app.route('/logout') # Logout
+@app.route('/logout') #! Logout
 def logout():
-    if 'account' in session:
-        session.pop('account') #? Elimina la variable de la sesión
-        print("session was deleted")
-    return redirect(url_for('prueba')) #? Sirve para redireccionar a una función con app.route
+    try:
+        if 'account' in session:
+            session.pop('account') #? Elimina la variable de la sesión
+            print("session was deleted")
+            return redirect(url_for('index'))
+        # return redirect(url_for('log')) #? Sirve para redireccionar a una función con app.route
+        else:
+            return jsonify({'msg': "there is'n active session"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
 
-@app.route('/prueba') # prueba
-def prueba():
-    if 'account' in session:
-        print("in session")
-    else:
-        print("no session")
-    return render_template("index.html")
+#*----------------------------------------------------------------------------------------------*#
+#? Rutas para gestionar las tareas
 
-
-# create_user(user) #*Funciona
-# log_in(user) #*Funciona
-
-
-
-
+# todo: rutas
 
 if __name__ == "__main__":
     app.run(debug=True, port=4000)

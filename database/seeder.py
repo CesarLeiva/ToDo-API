@@ -73,11 +73,17 @@ def create_user(user) -> bool: #! Función registro de usuario
         print("usuario creado con éxito")
         return True
 
-def log_in(user): #! Función inicio de sesión
+def log_in(user): #! Función inicio de sesión 
     conn = sql.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT password FROM users WHERE account = ?", (user.account,))
-    return user.check_password(cursor.fetchone()[0])
+    result = cursor.fetchone()
+    if result:
+        stored_password = result[0]
+        if bcrypt.checkpw(user.password.encode('utf-8'), stored_password):
+            return True
+    else:
+        return False
 
 def log_out():
     pass

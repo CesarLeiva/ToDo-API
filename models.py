@@ -1,7 +1,7 @@
 import bcrypt
 
 class User:
-    def __init__(self, account, password, name) -> None:
+    def __init__(self, account, password, name=None) -> None:
         self._account = account
         self._password = password
         self._name = name
@@ -26,26 +26,37 @@ class User:
     def setid(self, id) -> None:
         self._id = id
 
-    def check_password(self, stored_password) -> bool:
-        if stored_password and bcrypt.checkpw(self._password.encode('utf-8'), stored_password):
-            print("Inicio de sesión exitoso")
-            return True
-        else:
-            print("Usuario o contraseña incorrectos")
-            return False
-
 class Task:
-    def __init__(self, user_id, description, priority=None, date=None, time=None):
-        self.user_id = user_id
-        self.description = description
-        self.completed = False
-        self.published = False
+    def __init__(self, user_id, description, priority=None, date=None, time=None, completed = False, published = False):
+        self._user_id = user_id
+        self._description = description
+        self.priority = priority
         # date=2024-08-06&time=14:45
         self.date = date
         self.time = time
         # priority_list = ['high', 'medium', 'low', 'very low']
-        self.priority = priority
-        self.id = None
+        self.completed = completed
+        self.published = published
+        self._id = None
+
+    @property
+    def user_id(self) -> str:
+            return self._user_id
+    @property
+    def description(self) -> str:
+        return self._description
+    
+    @property
+    def id(self) -> str:
+            return self._id
+    
+    def setid(self, id):
+        self._id = id
+    
+    def setdescription(self, description):
+        self._description = description
+    
+    
 
 class Super_task(Task):
     def __init__(self, user_id, description):
