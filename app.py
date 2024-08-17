@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from models import User, Task
-from database.seeder import create_user, log_in, show_tasks, get_id, create_task
+from database.seeder import create_user, log_in, show_tasks, get_id, create_task, complete_task
 from logging import exception
 
 app = Flask(__name__)
@@ -126,7 +126,17 @@ def addtask():
 
 @app.route('/api/completetask', methods=["POST"]) #! Marcar tarea como completada
 def completetask():
-    return jsonify({'msg': 'function no enabled yet'})
+    try:
+        if 'account_id' in session:
+            if complete_task(user_id=session['account_id'], task_id=request.form['task_id']):
+                return jsonify({'msg': "completed status was changed"})
+            else:
+                return jsonify({'msg': "task doesn't exist"})
+        else:
+            return jsonify({'msg': "there is'n active session"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True, port=4000)

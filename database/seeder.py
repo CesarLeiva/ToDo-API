@@ -3,7 +3,7 @@ import bcrypt
 
 db_path = "C:\\Users\\César Leiva\\Desktop\\ToDo-API\\database\\ToDo.db"
 
-def create_db():
+def create_db(): #!Crear las tablas de la base de datos
     conn = sql.connect(db_path)
     cursor = conn.cursor()
     cursor.execute(
@@ -96,7 +96,7 @@ def log_in(user): #! Función inicio de sesión
 def show_tasks(user_id): #! Mostrar tareas creadas por el usuario
     conn = sql.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute(f"SELECT * FROM tasks WHERE user_id = ?", str(user_id))
+    cursor.execute("SELECT * FROM tasks WHERE user_id = ?", str(user_id))
     tasks = cursor.fetchall()
     if tasks:
         return tasks
@@ -115,8 +115,22 @@ def create_task(task): #! Crear una tarea
     conn.commit()
     conn.close()
 
-def complete_task(): #ToDo: Marcar tarea como completada
-    pass
+def complete_task(user_id, task_id):
+    conn = sql.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT completed FROM tasks WHERE id = ? AND user_id = ?", (task_id, user_id))
+    task_status = cursor.fetchone()
+    if task_status:
+        if task_status[0]:
+            new_status = 0
+        else:
+            new_status = 1
+        cursor.execute("UPDATE tasks SET completed = ? WHERE id = ? AND user_id = ?", (new_status, task_id, user_id))
+        conn.commit()
+        conn.close()
+        return True
+    else:
+        return False
 
 if __name__ == '__main__':
     create_db()
