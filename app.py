@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, render_template, session, redirect, url_for
 from models import User, Task
-from database.seeder import create_user, log_in, show_tasks, get_id, create_task, complete_task
+from database.seeder import create_user, log_in, show_tasks, get_id, create_task, complete_task, modify_task, delete_task
 from logging import exception
 
 app = Flask(__name__)
@@ -35,6 +35,17 @@ def addtaskpage():
     try:
         if 'account_id' in session:
             return render_template("addtask.html")
+        else:
+            return jsonify({'msg': "there is'n active session"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
+
+@app.route('/modifytask') #! Muestra el formulario para modificar la información de una tarea
+def modify_task_page():
+    try:
+        if 'account_id' in session:
+            return render_template("modifytask.html")
         else:
             return jsonify({'msg': "there is'n active session"})
     except Exception:
@@ -132,6 +143,40 @@ def completetask():
                 return jsonify({'msg': "completed status was changed"})
             else:
                 return jsonify({'msg': "task doesn't exist"})
+        else:
+            return jsonify({'msg': "there is'n active session"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
+    
+@app.route('/api/modifytask', methods=["POST"]) #! Editar valores de una tarea
+def modifytask():
+    try:
+        if 'account_id' in session:
+            description = request.form['description']
+            priority = request.form['priority']
+            time = request.form['time']
+            date = request.form['date']
+            task_id = request.form['task_id']
+            task_modify = Task(user_id=session['account_id'], description=description, priority=priority, time=time, date=date, id=task_id)
+            if modify_task(task_modify):
+                return jsonify({"msg": "task successfully modified"})
+            else:
+                return jsonify({"msg": "task doesn't exist"})
+        else:
+            return jsonify({'msg': "there is'n active session"})
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/register. Log: \n") # devueve error si algo sale mal (por consola)
+        return jsonify({"msg": "An error has occurred"}), 500
+
+@app.route('/api/deletetask', methods=["POST"]) #! Eliminar una tarea
+def deletetask():
+    try:
+        if 'account_id' in session:
+            if delete_task(request.form['task_id'], session['account_id']):
+                return jsonify({"msg": "task deleted successfully"})
+            else:
+                return jsonify({"msg": "task doesn't exist"})
         else:
             return jsonify({'msg': "there is'n active session"})
     except Exception:

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body style="background-color: darkgray;">
+    
+    <div style="width: fit-content; margin: 0 auto; margin-top: 80px;">
+
+        <h1>Edit some task</h1>
+
+        <form action="/api/modifytask" method="post">
+
+            <label for="task_id">task_id</label><br>
+            <input type="number" name="task_id" id="task_id" required>
+
+            <br></br>
+
+            <label for="description">Description</label><br>
+            <input type="text" name="description" id="description" required>
+
+            <br></br>
+
+            <label for="priority"> Priority</label>
+            <select name="priority" id="priority">
+                <option value="" selected>No aplica</option>
+                <option value="High">High</option>
+                <option value="Medium">Medium</option>
+                <option value="Low">Low</option>
+                <option value="Very low">Very low</option>
+            </select>
+
+            <br></br>
+
+            <label for="date">Date</label><br>
+            <input type="date" name="date" id="date">
+
+            <br><br>
+
+            <label for="time">Time</label><br>
+            <input type="time" name="time" id="time">
+
+            <br><br>
+
+            <input type="submit" value="Submit modification">
+
+        </form>
+
+    </div>
+
+</body>
+</html>

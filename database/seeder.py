@@ -115,7 +115,7 @@ def create_task(task): #! Crear una tarea
     conn.commit()
     conn.close()
 
-def complete_task(user_id, task_id):
+def complete_task(user_id, task_id): #! Marcar o desmarcar una tarea como completada
     conn = sql.connect(db_path)
     cursor = conn.cursor()
     cursor.execute("SELECT completed FROM tasks WHERE id = ? AND user_id = ?", (task_id, user_id))
@@ -132,5 +132,28 @@ def complete_task(user_id, task_id):
     else:
         return False
 
+def modify_task(task): #! Editar la información de una tarea
+    #ToDo: Modificarla también en google si está publicada
+    conn = sql.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("UPDATE tasks SET description = ?, priority = ?, date = ?, time = ? WHERE id = ? AND user_id = ?",
+                   (task.description, task.priority, task.date, task.time, task.id, task.user_id))
+    conn.commit()
+    conn.close()
+    if cursor.rowcount == 1:
+        return True
+    else:
+        return False
+def delete_task(task_id, user_id):
+    conn = sql.connect(db_path)
+    cursor = conn.cursor() #! Eliminar una tarea
+    cursor.execute("DELETE FROM tasks WHERE id = ? AND user_id = ?", (task_id, user_id))
+    conn.commit()
+    conn.close()
+    if cursor.rowcount == 1:
+        return True
+    else:
+        return False
+    
 if __name__ == '__main__':
     create_db()

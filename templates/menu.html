@@ -25,6 +25,16 @@
             <input type="submit" value="Change status">
         </form>
         <br>
+        <form action="/modifytask">
+            <input type="submit" value="Go to edit some task">
+        </form>
+        <br>
+        <form action="/api/deletetask" method="post">
+            <label for="task_id">Introduce task id to delete task</label><br>
+            <input type="number" name="task_id" id="task_id">
+            <input type="submit" value="Delete task">
+        </form>
+        <br>
         <form action="/logout">
             <input type="submit" value="Log out">
         </form>
