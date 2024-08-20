@@ -1,7 +1,7 @@
 import sqlite3 as sql
 import bcrypt
 
-db_path = "C:\\Users\\César Leiva\\Desktop\\ToDo-API\\database\\ToDo.db"
+db_path = "database\\ToDo.db"
 
 def create_db(): #!Crear las tablas de la base de datos
     conn = sql.connect(db_path)
@@ -27,27 +27,27 @@ def create_db(): #!Crear las tablas de la base de datos
         FOREIGN KEY (user_id) REFERENCES users(id)
         )"""
     )
-    cursor.execute(
-        """CREATE TABLE super_tasks(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        description TEXT NOT NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id)
-        )"""
-    )
-    cursor.execute(
-        """CREATE TABLE sub_tasks(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        super_task_id INTEGER NOT NULL,
-        description TEXT NOT NULL,
-        completed BOOLEAN DEFAULT FALSE,
-        published BOOLEAN DEFAULT FALSE,
-        priority TEXT,
-        date DATE,
-        time TIME,
-        FOREIGN KEY (super_task_id) REFERENCES super_tasks(id)
-        )"""
-    )
+    # cursor.execute(
+    #     """CREATE TABLE super_tasks(
+    #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     user_id INTEGER NOT NULL,
+    #     description TEXT NOT NULL,
+    #     FOREIGN KEY (user_id) REFERENCES users(id)
+    #     )"""
+    # )
+    # cursor.execute(
+    #     """CREATE TABLE sub_tasks(
+    #     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #     super_task_id INTEGER NOT NULL,
+    #     description TEXT NOT NULL,
+    #     completed BOOLEAN DEFAULT FALSE,
+    #     published BOOLEAN DEFAULT FALSE,
+    #     priority TEXT,
+    #     date DATE,
+    #     time TIME,
+    #     FOREIGN KEY (super_task_id) REFERENCES super_tasks(id)
+    #     )"""
+    # )
     conn.commit()
     conn.close()
 
@@ -104,14 +104,21 @@ def show_tasks(user_id): #! Mostrar tareas creadas por el usuario
         return False
 
 def create_task(task): #! Crear una tarea
-    # ToDo: Evitar que se guarde "" en vez de null
     conn = sql.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute(
-        """INSERT INTO tasks (user_id, description, completed, published, priority, date, time)
-        VALUES (?, ?, ?, ?, ?, ?, ?)""",
-        (task.user_id, task.description, task.completed, task.published, task.priority, task.date, task.time)
-    )
+    query = "INSERT INTO tasks (user_id, description"
+    params = [task.user_id, task.description]
+    if task.priority != "":
+        query+=", priority"
+        params.append(task.priority)
+    if task.date != "":
+        query+=", date"
+        params.append(task.date)
+    if task.time != "":
+        params.append(task.time)
+        query+=", time"
+    query+=") VALUES (" + ", ".join(["?"] * len(params)) + ")"
+    cursor.execute(query, tuple(params))
     conn.commit()
     conn.close()
 
@@ -136,17 +143,31 @@ def modify_task(task): #! Editar la información de una tarea
     #ToDo: Modificarla también en google si está publicada
     conn = sql.connect(db_path)
     cursor = conn.cursor()
-    cursor.execute("UPDATE tasks SET description = ?, priority = ?, date = ?, time = ? WHERE id = ? AND user_id = ?",
-                   (task.description, task.priority, task.date, task.time, task.id, task.user_id))
+    query = "UPDATE tasks SET description = ?"
+    params = [task.description]
+    if task.priority != "":
+        query+=", priority = ?"
+        params.append(task.priority)
+    if task.date != "":
+        query+=", date = ?"
+        params.append(task.date)
+    if task.time != "":
+        query+=", time = ?"
+        params.append(task.time)
+    query+=" WHERE id = ? AND user_id = ?"
+    params.append(task.id)
+    params.append(task.user_id)
+    cursor.execute(query, tuple(params))
     conn.commit()
     conn.close()
     if cursor.rowcount == 1:
         return True
     else:
         return False
-def delete_task(task_id, user_id):
+    
+def delete_task(task_id, user_id): #! Eliminar una tarea
     conn = sql.connect(db_path)
-    cursor = conn.cursor() #! Eliminar una tarea
+    cursor = conn.cursor() 
     cursor.execute("DELETE FROM tasks WHERE id = ? AND user_id = ?", (task_id, user_id))
     conn.commit()
     conn.close()

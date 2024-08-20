@@ -65,13 +65,11 @@ class Task:
             "published": self.published
         }
     
+# class Super_task(Task):
+#     def __init__(self, user_id, description):
+#         super().__init__(user_id, description)
     
-
-class Super_task(Task):
-    def __init__(self, user_id, description):
-        super().__init__(user_id, description)
-    
-class Sub_task(Task):
-    def __init__(self, super_task_id, description, priority=None, date=None, time=None):
-        super().__init__(id, description, priority, date, time)
-        self.super_task_id = super_task_id
+# class Sub_task(Task):
+#     def __init__(self, super_task_id, description, priority=None, date=None, time=None):
+#         super().__init__(id, description, priority, date, time)
+#         self.super_task_id = super_task_id
