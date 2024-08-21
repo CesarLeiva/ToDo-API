@@ -96,7 +96,9 @@ def addtask():
             priority_list = ["high", "medium", "low", "very low", ""]
             date_pattern = r'^\d{4}-\d{2}-\d{2}$'
             time_pattern = r'^\d{2}:\d{2}$'
-            if not description:
+            if len(show_tasks(session['account_id'])) >= 50:
+                return jsonify({"msg": "maximum number of tasks exceeded"}), 400
+            elif not description:
                 return jsonify({"msg": "Error. No description was provided"}), 400
             elif priority not in priority_list:
                 return jsonify({"msg": "Error. The accepted priority strings are '' or 'high', 'medium', 'low', 'very low'"}), 400
