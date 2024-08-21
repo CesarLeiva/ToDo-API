@@ -1,6 +1,6 @@
 from flask import Flask, jsonify, request, session
 from models import User, Task
-from database.seeder import create_user, log_in, show_tasks, get_id, create_task, complete_task, modify_task, delete_task
+from database.seeder import create_user, log_in, show_tasks, get_id, create_task, complete_task, modify_task, delete_task, find_tasks
 from logging import exception
 import re
 
@@ -174,7 +174,28 @@ def deletetask():
         else:
             return jsonify({'msg': "there is'n active session"}), 404
     except Exception:
-        exception("\n[SERVER]: error in rourte /api/deletetask. Log: \n") # devueve error si algo sale mal (por consola)
+        exception("\n[SERVER]: error in rourte /api/deletetask. Log: \n")
+        return jsonify({"msg": "An error has occurred"}), 500
+
+@app.route('/api/findtasks', methods=["GET"]) #! Buscar tareas
+def findtasks():
+    try:
+        description = request.args['description']
+        if 'account_id' in session:
+            if show_tasks(session['account_id']):
+                task_list = []
+                for task in find_tasks(f"%{description}%"):
+                    task_serializated = Task(id=int(task[0]), user_id=int(task[1]), description=task[2],
+                                            completed=bool(task[3]), published=bool(task[4]),
+                                            priority=task[5], date=task[6], time=task[7]).serialize()
+                    task_list.append(task_serializated)
+                return jsonify(task_list), 200
+            else:
+                return jsonify({"msg": "there are no tasks that match that search"}), 404
+        else:
+            return jsonify({'msg': "there is'n active session"}), 404
+    except Exception:
+        exception("\n[SERVER]: error in rourte /api/findtasks. Log: \n")
         return jsonify({"msg": "An error has occurred"}), 500
 
 if __name__ == "__main__":

@@ -98,6 +98,7 @@ def show_tasks(user_id): #! Mostrar tareas creadas por el usuario
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM tasks WHERE user_id = ?", str(user_id))
     tasks = cursor.fetchall()
+    conn.close()
     if tasks:
         return tasks
     else:
@@ -176,5 +177,18 @@ def delete_task(task_id, user_id): #! Eliminar una tarea
     else:
         return False
     
+def find_tasks(description): #! Buscar tarea
+    conn = sql.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM tasks WHERE description LIKE ?", (description,))
+    tasks = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    if tasks:
+        return tasks
+    else:
+        return False
+    
+
 if __name__ == '__main__':
     create_db()
