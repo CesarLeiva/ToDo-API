@@ -46,7 +46,7 @@ Once the server is running, you can interact with the API using tools like Postm
 ### Base URL
 
 ```
-http://127.0.0.1:5000/api
+http://127.0.0.1:4000/api
 ```
 
 ## Endpoints
@@ -71,8 +71,7 @@ http://127.0.0.1:5000/api
 
     ```json
     {
-      "message": "User created successfully",
-      "user_id": "unique_user_id"
+      "message": "User created successfully"
     }
     ```
 
@@ -92,8 +91,7 @@ http://127.0.0.1:5000/api
 
     ```json
     {
-      "message": "User authenticated successfully",
-      "token": "auth_token"
+      "message": "User authenticated successfully"
     }
     ```
 
@@ -103,23 +101,21 @@ http://127.0.0.1:5000/api
 
   - **Endpoint:** `/tasks`
   - **Method:** `POST`
-  - **Headers:** `Authorization: Bearer <token>`
   - **Request Body:**
 
     ```json
     {
-      "title": "string",
       "description": "string",
-      "due_date": "YYYY-MM-DD",
-      "priority": "string"
+      "priority": "string",
+      "date": "YYYY/MM/DD",
+      "time": "HH:MM",
     }
     ```
   - **Response:**
 
     ```json
     {
-      "message": "Task created successfully",
-      "task_id": "unique_task_id"
+      "message": "Task created successfully"
     }
     ```
 
@@ -127,20 +123,19 @@ http://127.0.0.1:5000/api
 
   - **Endpoint:** `/tasks`
   - **Method:** `GET`
-  - **Headers:** `Authorization: Bearer <token>`
   - **Response:**
 
     ```json
     [
       {
-        "id": "task_id",
-        "title": "string",
+        "id": int,
         "description": "string",
-        "due_date": "YYYY-MM-DD",
         "priority": "string",
-        "status": "string"
-      },
-      ...
+        "date": "YYYY/MM/DD",
+        "time": "HH:MM",
+        "completed": bool,
+        "published": bool
+      }
     ]
     ```
 
@@ -148,16 +143,14 @@ http://127.0.0.1:5000/api
 
   - **Endpoint:** `/tasks/<task_id>`
   - **Method:** `PUT`
-  - **Headers:** `Authorization: Bearer <token>`
   - **Request Body:**
 
     ```json
     {
-      "title": "string",
       "description": "string",
-      "due_date": "YYYY-MM-DD",
       "priority": "string",
-      "status": "string"
+      "date": "YYYY/MM/DD",
+      "time": "HH:MM",
     }
     ```
   - **Response:**
@@ -172,7 +165,6 @@ http://127.0.0.1:5000/api
 
   - **Endpoint:** `/tasks/<task_id>`
   - **Method:** `DELETE`
-  - **Headers:** `Authorization: Bearer <token>`
   - **Response:**
 
     ```json
@@ -194,11 +186,13 @@ http://127.0.0.1:5000/api
 ### Task
 
 - **Attributes:**
-  - `title` (string): The title of the task.
+  - `id` (int): A unique identifier for the task.
   - `description` (string): A brief description of the task.
-  - `due_date` (date): The due date for the task.
-  - `priority` (string): Priority level of the task (e.g., Low, Medium, High).
-  - `status` (string): Current status of the task (e.g., Pending, Completed).
+  - `priority` (string): Priority level of the task (e.g., Very Low, Low, Medium, High).
+  - `date` (date): The date for the task, formatted as `YYYY/MM/DD`.
+  - `time` (time): The time for the task, formatted as `HH:MM`.
+  - `completed` (bool): Whether the task is completed.
+  - `published` (bool): Whether the task is published.
 
 ## Error Handling
 
