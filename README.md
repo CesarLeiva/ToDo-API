@@ -2,6 +2,8 @@
 
 This is a simple To-Do API that allows users to manage their tasks through CRUD operations. The API is built using Flask and does not use an ORM.
 
+View postman documentation -> https://documenter.getpostman.com/view/34385721/2sAXjDfwCr
+
 ## Table of Contents
 
 - [Installation](#installation)
